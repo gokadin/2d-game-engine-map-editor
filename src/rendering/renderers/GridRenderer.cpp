@@ -12,7 +12,7 @@ GridRenderer::GridRenderer(GameState &state):
     }
     m_tileSprite.setTexture(m_tileTexture);
 
-    if (!m_hoverTexture.loadFromFile("../assets/tiles/hover.png"))
+    if (!m_hoverTexture.loadFromFile("../assets/tiles/hover_" + std::to_string(NODE_SIZE) + ".png"))
     {
         std::cout << "Could not load tile texture." << std::endl;
     }
@@ -21,21 +21,14 @@ GridRenderer::GridRenderer(GameState &state):
     m_tile.setFillColor(sf::Color::Blue);
     m_tile.setSize(sf::Vector2f(NODE_SIZE, NODE_SIZE));
 
-    for (int i = 0; i < 3200 / GRID_WIDTH; i++)
+    for (int i = 0; i < MAP_WIDTH / GRID_WIDTH; i++)
     {
         std::vector<int> row;
-        std::vector<sf::RectangleShape> squareRow;
-        for (int j = 0; j < 3200 / GRID_WIDTH; j++)
+        for (int j = 0; j < MAP_HEIGHT / GRID_WIDTH; j++)
         {
             row.push_back(0);
-
-            sf::RectangleShape square(sf::Vector2f(GRID_WIDTH, GRID_HEIGHT));
-            square.setOutlineThickness(0.5f);
-            square.setOutlineColor(sf::Color(0, 255, 0, 100));
-            squareRow.push_back(square);
         }
         grid.push_back(row);
-        squares.push_back(squareRow);
     }
 }
 
@@ -48,25 +41,27 @@ void GridRenderer::draw(sf::RenderWindow *window)
 {
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
 
-    int tx = mousePos.x + state.map.x - state.config.width / 2;
+    int tx = mousePos.x + state.map.x - MAP_WIDTH / 2 + GRID_WIDTH;
     int ty = mousePos.y + state.map.y;
     float mouseCartX = (2.0f * ty + tx) / 4.0f;
     float mouseCartY = (2.0f * ty - tx) / 4.0f;
     int mouseI = (int)floor(mouseCartX / NODE_SIZE);
     int mouseJ = (int)floor(mouseCartY / NODE_SIZE);
 
-    for (int i = 0; i < 3200 / GRID_WIDTH; i++)
+    std::cout << mouseI << " " << mouseJ << std::endl;
+
+    for (int i = 0; i < MAP_WIDTH / GRID_WIDTH; i++)
     {
-        for (int j = 0; j < 3200 / GRID_WIDTH; j++)
+        for (int j = 0; j < MAP_HEIGHT / GRID_WIDTH; j++)
         {
             int x = i * NODE_SIZE;
             int y = j * NODE_SIZE;
-            m_tileSprite.setPosition(toIsometric(x, y, state.map.x - state.config.width / 2, state.map.y));
+            m_tileSprite.setPosition(toIsometric(x, y, state.map.x - MAP_WIDTH / 2 + GRID_WIDTH, state.map.y));
             window->draw(m_tileSprite);
 
             if (grid[i][j] > 0 || (mouseI == i && mouseJ == j))
             {
-                m_hoverSprite.setPosition(toIsometric(x, y, state.map.x - state.config.width / 2, state.map.y));
+                m_hoverSprite.setPosition(toIsometric(x, y, state.map.x - MAP_WIDTH / 2 + GRID_WIDTH, state.map.y));
                 window->draw(m_hoverSprite);
             }
 
@@ -115,10 +110,10 @@ void GridRenderer::process(action_types type, sf::Event &event)
 void GridRenderer::write()
 {
     std::vector<std::string> lines;
-    for (int i = 0; i < 3200 / GRID_WIDTH; i++)
+    for (int i = 0; i < MAP_WIDTH / GRID_WIDTH; i++)
     {
         std::string line = "";
-        for (int j = 0; j < 3200 / GRID_WIDTH; j++)
+        for (int j = 0; j < MAP_HEIGHT / GRID_WIDTH; j++)
         {
             if (grid[i][j] == 0)
             {

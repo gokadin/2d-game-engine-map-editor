@@ -7,9 +7,16 @@
 #include <SFML/Graphics/Texture.hpp>
 #include "../Renderer.h"
 
+/*
+ * GRID_WIDTH = NODE_SIZE * 4
+ * GRID_HEIGHT = NODE_SIZE * 2
+ */
+
 const int GRID_WIDTH = 32;
 const int GRID_HEIGHT = 16;
 const int NODE_SIZE = 8;
+const int MAP_WIDTH = 3200; // must be a multiple of GRID_WIDTH
+const int MAP_HEIGHT = 3200;
 
 class GridRenderer : public Renderer
 {
@@ -22,7 +29,6 @@ public:
 
 private:
     std::vector<std::vector<int>> grid;
-    std::vector<std::vector<sf::RectangleShape>> squares;
     sf::Texture m_tileTexture;
     sf::Sprite m_tileSprite;
     sf::RectangleShape m_tile;
